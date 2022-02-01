@@ -5,7 +5,7 @@ from social_network.models import Post, Like
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
-        fields = ['post_text', 'publication_date', 'creator']
+        fields = ['id', 'post_text', 'publication_date', 'creator']
         extra_kwargs = {'publication_date' : {'read_only' : True}}
 
 class LikeSerializer(serializers.HyperlinkedModelSerializer):
