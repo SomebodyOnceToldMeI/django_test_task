@@ -1,6 +1,7 @@
 from bot_config import NUMBER_OF_USERS, MAX_POSTS_PER_USER, MAX_LIKES_PER_USER
 import random
-
+import requests
+import json
 
 def infinite_file_generator(filename):
     f = open(filename)
@@ -72,6 +73,33 @@ class Bot:
                 random_post = random.choice(self.posts)
                 self._like_post(user, random_post)
 
+class ApiOperations:
+    def __init__(self, api_url):
+        self.api_url = api_url
+
+    def signup_user(self, username, password):
+        payload = {'username' : username, 'password' : password}
+        response = requests.post(self.api_url + '/user/', json = payload)
+        return payload
+
+    def create_post(self, user, post_message):
+        payload = {'post_text' : post_message}
+        headers = {'Authorization' : user.get('access_token')}
+        response = requests.post(self.api_url + '/post/', json = payload, headers = headers)
+        response = json.loads(response.text)
+        return {'post_id' : response['post_id']}
+
+    def authenticate_user(self, user):
+        payload = {'username': user['username'], 'password': user['password']}
+        response = requests.post(self.api_url + '/login/', json=payload)
+        response = json.loads(response.text)
+        user['access_token'] = response['access_token']
+        return user
+
+    def like_post(self, user, post):
+        headers = {'Authorization': user.get('access_token')}
+        response = requests.post(self.api_url + '/post/{}/like'.format(post['id']), headers=headers)
+        
 
 #bot = Bot()
 #bot.signup_users(NUMBER_OF_USERS)
