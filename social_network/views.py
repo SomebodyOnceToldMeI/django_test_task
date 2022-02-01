@@ -48,4 +48,16 @@ class LikeViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [UserPermission]
+
+    def create(self, request):
+        data = request.data
+        new_user = User(username=data['username'])
+        new_user.set_password(data['password'])
+        try:
+            new_user.save()
+            return Response({'response' : "user is successfully created."})
+        except:
+            return Response({'response' : "user already exists."})
+
+
