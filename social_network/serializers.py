@@ -15,4 +15,4 @@ class LikeSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'password']
