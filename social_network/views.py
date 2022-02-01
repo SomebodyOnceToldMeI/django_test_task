@@ -15,6 +15,18 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+    def create(self, request):
+        data = request.data
+        new_post = Post(post_text = data['post_text'], creator = request.user, publication_date = timezone.now())
+        try:
+            new_post.save()
+            return Response(self.serializer_class(new_post, context={'request' : request}).data)
+        except Exception as e:
+            print(e)
+            return Response({'response' : "post already exists."})
+
+
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         post = Post.objects.get(id=pk)
