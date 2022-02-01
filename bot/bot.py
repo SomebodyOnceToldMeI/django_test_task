@@ -22,11 +22,12 @@ def post_messages_generator():
 
 
 class Bot:
-    def __init__(self):
+    def __init__(self, api_operations):
         self.usernames_generator = usernames_generator()
         self.post_messages_generator = post_messages_generator()
         self.users = []
         self.posts = []
+        self.api_operations = api_operations
 
     def signup_users(self, number_of_users):
         signed_up_users = 0
@@ -35,15 +36,18 @@ class Bot:
             if signed_up_users == number_of_users:
                 break
 
-            self._signup_user(username)
-            self._save_user(username)
+            user = self._signup_user(username)
+            self._save_user(user)
             signed_up_users += 1
 
     def _signup_user(self, username):
-        pass
+        user = self.api_operations.signup_user(username, username)
+        return user
 
-    def _save_user(self, username):
-        pass
+    def _save_user(self, user_to_add):
+        self.users = [user for user in self.users if not user['username'] == user_to_add['username']]
+        self.users.append(user_to_add)
+
 
     def create_random_number_of_posts_per_user(self, max_posts_per_user):
         for user in self.users:
@@ -53,10 +57,12 @@ class Bot:
                 self._save_post(post)
 
     def _create_random_post(self, user):
-        pass
+        post_message = self.post_messages_generator.__next__()
+        post = self.api_operations.create_post(user, post_message)
+        return post
 
     def _save_post(self, post):
-        pass
+        self.posts.append(post)
 
     def authenticate_users(self):
         for user in self.users:
@@ -64,7 +70,8 @@ class Bot:
             self._save_user(authenticated_user)
 
     def _authenticate_user(self, user):
-        pass
+        authenticated_user = self.api_operations.authenticate_user(user)
+        return authenticated_user
 
     def randomly_like_posts(self, max_likes_per_user):
         for user in self.users:
@@ -99,7 +106,7 @@ class ApiOperations:
     def like_post(self, user, post):
         headers = {'Authorization': user.get('access_token')}
         response = requests.post(self.api_url + '/post/{}/like'.format(post['id']), headers=headers)
-        
+
 
 #bot = Bot()
 #bot.signup_users(NUMBER_OF_USERS)
