@@ -3,6 +3,7 @@ import random
 import requests
 import json
 
+
 def infinite_file_generator(filename):
     f = open(filename)
     while True:
@@ -13,7 +14,6 @@ def infinite_file_generator(filename):
         except:
             f.seek(0)
             continue
-
 
 
 def usernames_generator():
@@ -46,7 +46,6 @@ class Bot:
     def _save_user(self, user_to_add):
         self.users = [user for user in self.users if not user['username'] == user_to_add['username']]
         self.users.append(user_to_add)
-
 
     def create_random_number_of_posts_per_user(self, max_posts_per_user):
         for user in self.users:
@@ -82,21 +81,22 @@ class Bot:
     def _like_post(self, user, post):
         self.api_operations.like_post(user, post)
 
+
 class ApiOperations:
     def __init__(self, api_url):
         self.api_url = api_url
 
     def signup_user(self, username, password):
-        payload = {'username' : username, 'password' : password}
-        response = requests.post(self.api_url + '/user/', json = payload)
+        payload = {'username': username, 'password' : password}
+        response = requests.post(self.api_url + '/user/', json=payload)
         return payload
 
     def create_post(self, user, post_message):
-        payload = {'post_text' : post_message}
-        headers = {'Authorization' : 'Bearer ' + user.get('access')}
-        response = requests.post(self.api_url + '/post/', json = payload, headers = headers)
+        payload = {'post_text': post_message}
+        headers = {'Authorization': 'Bearer ' + user.get('access')}
+        response = requests.post(self.api_url + '/post/', json=payload, headers=headers)
         response = json.loads(response.text)
-        return {'id' : response['id']}
+        return {'id': response['id']}
 
     def authenticate_user(self, user):
         payload = {'username': user['username'], 'password': user['password']}
@@ -106,8 +106,9 @@ class ApiOperations:
         return user
 
     def like_post(self, user, post):
-        headers = {'Authorization' : 'Bearer ' + user.get('access')}
+        headers = {'Authorization': 'Bearer ' + user.get('access')}
         response = requests.post(self.api_url + '/post/{}/like/'.format(post['id']), headers=headers)
+
 
 api_operations = ApiOperations('http://127.0.0.1:8000')
 bot = Bot(api_operations)
