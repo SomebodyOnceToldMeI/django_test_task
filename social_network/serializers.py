@@ -8,11 +8,12 @@ class LikeSerializer(serializers.HyperlinkedModelSerializer):
         model = Like
         fields = ['post', 'liker', 'like_date']
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username', 'password']
-        extra_kwargs = {'password' : {'write_only' : True}}
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = User(username=validated_data['username'])
@@ -20,8 +21,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         user.save()
         return user
 
+
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     creator = UserSerializer(default=serializers.CurrentUserDefault())
+    
     class Meta:
         model = Post
         fields = ['url', 'id', 'post_text', 'publication_date', 'creator']
